@@ -20,6 +20,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Google Earth Engine Backend
+
+The `/map` page has GEE-powered analysis and time-series endpoints backed by a service account.
+
+**Setup (one-time):**
+
+1. In Google Cloud Console → IAM → Service Accounts, open `tropenbos-service-account`, then ⋮ → **Manage keys → Add key → Create new key → JSON**. Download the JSON file.
+2. Register the service account for Earth Engine at https://signup.earthengine.google.com/#!/service_accounts.
+3. Copy `.env.local.example` to `.env.local` and paste the **entire JSON** (as one line) into the `GEE_SERVICE_ACCOUNT_KEY=` variable. `.env.local` is gitignored by Next.js.
+4. Restart `npm run dev`.
+
+**Endpoints:**
+
+- `POST /api/gee/analyze` — body: `{ polygon: [[lng,lat],...], startDate?, endDate?, cloudPct?, treeThreshold? }`. Returns tile URLs for RGB/NDVI/tree-mask + area stats.
+- `POST /api/gee/timeseries` — body: `{ polygon, dataset, startDate, endDate }` where `dataset` ∈ `S2_NDVI | L8_NDVI | MODIS_NDVI | CHIRPS_PRECIP | HANSEN_LOSS`.
+- `POST /api/gee/export` — same shape as analyze; returns a GeoTIFF download URL for the tree mask.
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
